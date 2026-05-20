@@ -1,0 +1,874 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Capital Concierge — Valet Management</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+:root{
+  --navy:#0b1929;
+  --navy2:#0f2035;
+  --navy3:#142840;
+  --navy4:#1a3050;
+  --gold:#c9970d;
+  --gold2:#d4a820;
+  --gold3:#e2bc4a;
+  --gold-dim:rgba(201,151,13,0.15);
+  --gold-border:rgba(201,151,13,0.25);
+  --cream:#f0e9d6;
+  --text:#ede5d0;
+  --text2:#a8bbd0;
+  --text3:#627a90;
+  --success:#27ae60;
+  --danger:#c0392b;
+  --warn:#d97706;
+  --info:#2471a3;
+  --font-display:'Cormorant Garamond',serif;
+  --font-body:'Outfit',sans-serif;
+  --font-mono:'DM Mono',monospace;
+  --radius:8px;
+  --radius-lg:12px;
+  --radius-xl:18px;
+}
+html,body{height:100%;overflow:hidden}
+body{background:var(--navy);color:var(--text);font-family:var(--font-body);font-size:14px;display:flex;flex-direction:column}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:4px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:var(--gold-border);border-radius:4px}
+
+/* TOPBAR */
+.topbar{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 24px;height:60px;flex-shrink:0;
+  background:var(--navy2);
+  border-bottom:1px solid var(--gold);
+  position:relative;
+}
+.topbar::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(201,151,13,0.6),transparent)}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-crest{
+  width:36px;height:36px;border:1px solid var(--gold-border);border-radius:4px;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--gold2);font-size:16px;
+}
+.brand-text{}
+.brand-main{font-family:var(--font-display);font-size:18px;font-weight:600;letter-spacing:3px;color:var(--gold2);line-height:1}
+.brand-sub{font-size:9px;letter-spacing:5px;color:var(--text3);text-transform:uppercase;margin-top:2px}
+.topbar-right{display:flex;align-items:center;gap:16px}
+.shift-pill{
+  display:flex;align-items:center;gap:8px;
+  background:rgba(0,0,0,0.3);border:1px solid var(--gold-border);
+  padding:6px 14px;border-radius:30px;font-family:var(--font-mono);font-size:11px;color:var(--text2);
+}
+.shift-dot{width:6px;height:6px;border-radius:50%;background:var(--success);animation:blink 2s infinite}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0.3}}
+.location-tag{font-size:10px;color:var(--text3);letter-spacing:1px}
+
+/* LAYOUT */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* SIDEBAR */
+.sidebar{
+  width:220px;flex-shrink:0;background:var(--navy2);
+  border-right:1px solid var(--gold-border);
+  display:flex;flex-direction:column;padding:20px 0;
+}
+.nav-section-label{font-size:9px;letter-spacing:2px;color:var(--text3);text-transform:uppercase;padding:0 20px;margin-bottom:8px;margin-top:16px}
+.nav-section-label:first-child{margin-top:0}
+.nav-item{
+  display:flex;align-items:center;gap:12px;padding:10px 20px;
+  cursor:pointer;color:var(--text3);transition:all 0.15s;
+  border-left:2px solid transparent;font-size:13px;
+  position:relative;
+}
+.nav-item:hover{color:var(--text);background:rgba(255,255,255,0.03)}
+.nav-item.active{color:var(--gold2);background:var(--gold-dim);border-left-color:var(--gold)}
+.nav-item i{font-size:17px;width:20px;text-align:center}
+.nav-badge{
+  margin-left:auto;background:var(--danger);color:#fff;
+  font-size:9px;border-radius:10px;padding:1px 6px;min-width:18px;text-align:center;
+  display:none;
+}
+.sidebar-footer{margin-top:auto;padding:16px 20px;border-top:1px solid var(--gold-border)}
+.sidebar-footer-text{font-size:10px;color:var(--text3);letter-spacing:0.5px}
+
+/* MAIN */
+.main{flex:1;overflow-y:auto;padding:24px;display:flex;flex-direction:column;gap:20px}
+
+/* PAGE HEADER */
+.page-header{display:flex;align-items:center;justify-content:space-between}
+.page-title{font-family:var(--font-display);font-size:26px;font-weight:500;color:var(--cream);letter-spacing:1px}
+.page-sub{font-size:11px;color:var(--text3);letter-spacing:0.5px;margin-top:2px}
+.header-actions{display:flex;gap:10px;align-items:center}
+
+/* STATS */
+.stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.stat-card{
+  background:var(--navy3);border:1px solid var(--gold-border);
+  border-radius:var(--radius-lg);padding:16px 18px;
+  position:relative;overflow:hidden;
+}
+.stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px}
+.stat-card.gold::before{background:var(--gold)}
+.stat-card.green::before{background:var(--success)}
+.stat-card.red::before{background:var(--danger)}
+.stat-card.blue::before{background:var(--info)}
+.stat-icon{font-size:22px;color:var(--text3);margin-bottom:10px}
+.stat-card.gold .stat-icon{color:var(--gold)}
+.stat-card.green .stat-icon{color:var(--success)}
+.stat-card.red .stat-icon{color:var(--danger)}
+.stat-card.blue .stat-icon{color:var(--info)}
+.stat-val{font-size:26px;font-weight:600;font-family:var(--font-mono);color:var(--text);line-height:1}
+.stat-lbl{font-size:10px;color:var(--text3);margin-top:4px;letter-spacing:1px;text-transform:uppercase}
+
+/* SECTION */
+.section{display:none}
+.section.active{display:flex;flex-direction:column;gap:20px}
+
+/* CARD */
+.card{background:var(--navy3);border:1px solid var(--gold-border);border-radius:var(--radius-lg);overflow:hidden}
+.card-header{padding:14px 18px;border-bottom:1px solid var(--gold-border);display:flex;align-items:center;justify-content:space-between}
+.card-title{font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--text2);display:flex;align-items:center;gap:8px}
+.card-body{padding:16px 18px}
+
+/* CARS GRID */
+.cars-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:12px;padding:16px 18px}
+.car-card{
+  background:var(--navy4);border:1px solid rgba(255,255,255,0.06);
+  border-radius:var(--radius);padding:15px;cursor:pointer;
+  transition:all 0.2s;position:relative;
+}
+.car-card:hover{border-color:var(--gold);transform:translateY(-1px)}
+.car-card::after{content:'';position:absolute;inset:0;border-radius:var(--radius);opacity:0;transition:opacity 0.2s;background:rgba(201,151,13,0.03)}
+.car-card:hover::after{opacity:1}
+.car-spot{font-family:var(--font-mono);font-size:22px;font-weight:500;color:var(--gold2);letter-spacing:1px}
+.car-plate{font-family:var(--font-mono);font-size:13px;letter-spacing:2px;margin:6px 0 3px;color:var(--text)}
+.car-make{font-size:11px;color:var(--text3)}
+.car-meta{display:flex;align-items:center;justify-content:space-between;margin-top:10px}
+.car-time{font-size:10px;color:var(--text3);display:flex;align-items:center;gap:4px}
+.status-pill{font-size:9px;padding:2px 8px;border-radius:20px;letter-spacing:0.5px;text-transform:uppercase}
+.pill-parked{background:rgba(39,174,96,0.15);color:#2ecc71;border:1px solid rgba(39,174,96,0.3)}
+.pill-requested{background:rgba(192,57,43,0.15);color:#e74c3c;border:1px solid rgba(192,57,43,0.3);animation:pillpulse 1.5s infinite}
+.pill-transit{background:rgba(217,119,6,0.15);color:#f59e0b;border:1px solid rgba(217,119,6,0.3)}
+@keyframes pillpulse{0%,100%{opacity:1}50%{opacity:0.65}}
+
+/* TABLE */
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse}
+th{font-size:9px;letter-spacing:2px;text-transform:uppercase;color:var(--text3);padding:10px 14px;text-align:left;border-bottom:1px solid var(--gold-border);font-weight:400;font-family:var(--font-body)}
+td{padding:12px 14px;border-bottom:1px solid rgba(255,255,255,0.04);font-size:13px;vertical-align:middle}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:rgba(255,255,255,0.02)}
+.td-mono{font-family:var(--font-mono);letter-spacing:1px}
+.td-spot{font-family:var(--font-mono);font-size:15px;font-weight:500;color:var(--gold2)}
+
+/* BUTTONS */
+.btn{
+  display:inline-flex;align-items:center;gap:6px;padding:9px 16px;
+  border-radius:var(--radius);border:none;font-size:12px;cursor:pointer;
+  transition:all 0.15s;font-family:var(--font-body);letter-spacing:0.3px;
+  white-space:nowrap;
+}
+.btn:active{transform:scale(0.97)}
+.btn-gold{background:var(--gold);color:#0c0800;font-weight:600;border:1px solid var(--gold2)}
+.btn-gold:hover{background:var(--gold2)}
+.btn-ghost{background:transparent;border:1px solid var(--gold-border);color:var(--text2)}
+.btn-ghost:hover{background:var(--gold-dim);border-color:var(--gold);color:var(--text)}
+.btn-danger{background:rgba(192,57,43,0.15);border:1px solid rgba(192,57,43,0.3);color:#e74c3c}
+.btn-danger:hover{background:rgba(192,57,43,0.28)}
+.btn-success{background:rgba(39,174,96,0.15);border:1px solid rgba(39,174,96,0.3);color:#2ecc71}
+.btn-success:hover{background:rgba(39,174,96,0.28)}
+.btn-sm{padding:6px 11px;font-size:11px}
+.btn-icon{padding:7px;width:32px;height:32px;justify-content:center}
+
+/* FORMS */
+.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.form-group{display:flex;flex-direction:column;gap:6px}
+.form-group.full{grid-column:span 2}
+.form-label{font-size:10px;color:var(--text3);text-transform:uppercase;letter-spacing:1.2px}
+.form-input,.form-select{
+  background:rgba(0,0,0,0.3);border:1px solid rgba(201,151,13,0.2);
+  color:var(--text);padding:10px 13px;border-radius:var(--radius);
+  font-size:13px;font-family:var(--font-body);outline:none;
+  transition:border-color 0.2s;width:100%;
+}
+.form-input:focus,.form-select:focus{border-color:var(--gold)}
+.form-input::placeholder{color:var(--text3)}
+.form-select option{background:var(--navy)}
+.form-input.mono{font-family:var(--font-mono);letter-spacing:2px;font-size:15px;text-transform:uppercase}
+
+/* MODAL */
+.overlay{
+  position:fixed;inset:0;background:rgba(0,0,0,0.82);
+  display:flex;align-items:center;justify-content:center;
+  z-index:200;padding:20px;opacity:0;pointer-events:none;
+  transition:opacity 0.2s;
+}
+.overlay.open{opacity:1;pointer-events:all}
+.modal{
+  background:var(--navy2);border:1px solid var(--gold-border);
+  border-radius:var(--radius-xl);padding:26px;width:100%;max-width:460px;
+  transform:translateY(16px);transition:transform 0.2s;
+}
+.overlay.open .modal{transform:translateY(0)}
+.modal-header{
+  display:flex;align-items:center;gap:10px;margin-bottom:18px;
+  padding-bottom:14px;border-bottom:1px solid var(--gold-border);
+}
+.modal-title{font-family:var(--font-display);font-size:20px;font-weight:500;color:var(--cream);letter-spacing:1px}
+.modal-actions{display:flex;gap:10px;margin-top:20px;justify-content:flex-end}
+
+/* DETAIL GRID */
+.detail-grid{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:16px}
+.detail-field .d-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:4px}
+.detail-field .d-val{font-size:17px;font-weight:500}
+.d-val.mono{font-family:var(--font-mono);font-size:20px;color:var(--gold2)}
+.d-val.green{color:#2ecc71}
+
+/* PAYMENT */
+.pay-box{background:rgba(0,0,0,0.25);border:1px solid var(--gold-border);border-radius:var(--radius);padding:14px;margin:14px 0}
+.pay-row{display:flex;justify-content:space-between;align-items:center;padding:5px 0;font-size:12px;color:var(--text3)}
+.pay-row span:last-child{color:var(--text)}
+.pay-total{border-top:1px solid var(--gold-border);margin-top:8px;padding-top:10px;font-size:16px;font-weight:600;color:var(--gold2);display:flex;justify-content:space-between}
+.pay-methods{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:12px 0}
+.pay-btn{
+  padding:12px 8px;border:1px solid var(--gold-border);border-radius:var(--radius);
+  background:transparent;color:var(--text3);font-size:11px;cursor:pointer;
+  text-align:center;transition:all 0.15s;font-family:var(--font-body);
+}
+.pay-btn i{display:block;font-size:20px;margin-bottom:5px}
+.pay-btn.sel{border-color:var(--gold);color:var(--gold2);background:var(--gold-dim)}
+.pay-btn:hover:not(.sel){border-color:rgba(255,255,255,0.2);color:var(--text)}
+
+/* ALERTS */
+.alert-item{
+  display:flex;align-items:flex-start;gap:13px;padding:14px 16px;
+  border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;
+}
+.alert-item:last-child{border-bottom:none}
+.alert-item:hover{background:rgba(255,255,255,0.02)}
+.alert-icon{font-size:18px;width:22px;text-align:center;margin-top:1px;flex-shrink:0}
+.alert-body{flex:1}
+.alert-title{font-size:13px;font-weight:500;margin-bottom:2px}
+.alert-sub{font-size:11px;color:var(--text3)}
+.alert-time{font-size:10px;color:var(--text3);white-space:nowrap}
+
+/* TOAST */
+.toast-wrap{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:300}
+.toast{
+  display:flex;align-items:center;gap:9px;padding:11px 18px;
+  border-radius:30px;font-size:12px;font-weight:500;
+  animation:toastSlide 0.3s ease;letter-spacing:0.3px;
+  min-width:220px;border:1px solid transparent;
+}
+@keyframes toastSlide{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
+.toast.gold{background:#b8860b;color:#0c0800;border-color:#c9970d}
+.toast.green{background:rgba(39,174,96,0.92);color:#fff;border-color:rgba(39,174,96,0.5)}
+.toast.err{background:rgba(192,57,43,0.92);color:#fff;border-color:rgba(192,57,43,0.5)}
+
+/* EMPTY */
+.empty{text-align:center;padding:48px;color:var(--text3)}
+.empty i{font-size:40px;display:block;margin-bottom:12px;opacity:0.35}
+.empty p{font-size:13px}
+
+/* TAG */
+.tag{display:inline-block;font-size:9px;padding:3px 9px;border-radius:3px;letter-spacing:0.5px;text-transform:uppercase}
+.tag-gold{background:rgba(201,151,13,0.18);color:var(--gold2);border:1px solid var(--gold-border)}
+.tag-green{background:rgba(39,174,96,0.12);color:#2ecc71;border:1px solid rgba(39,174,96,0.25)}
+.tag-red{background:rgba(192,57,43,0.12);color:#e74c3c;border:1px solid rgba(192,57,43,0.25)}
+.tag-blue{background:rgba(36,113,163,0.15);color:#5dade2;border:1px solid rgba(36,113,163,0.3)}
+
+/* DIVIDER */
+.divider{height:1px;background:var(--gold-border);margin:14px 0}
+
+/* QUEUE ROW */
+.queue-row{
+  display:flex;align-items:center;gap:14px;padding:14px 18px;
+  border-bottom:1px solid rgba(255,255,255,0.04);transition:background 0.15s;
+}
+.queue-row:last-child{border-bottom:none}
+.queue-row:hover{background:rgba(255,255,255,0.02)}
+.queue-row.urgent{background:rgba(192,57,43,0.04);border-left:2px solid rgba(192,57,43,0.5)}
+.queue-num{font-family:var(--font-mono);font-size:20px;color:var(--gold2);min-width:32px}
+.queue-info{flex:1}
+.queue-plate{font-family:var(--font-mono);font-size:14px;letter-spacing:1.5px}
+.queue-detail{font-size:11px;color:var(--text3);margin-top:2px}
+.queue-actions{display:flex;gap:8px}
+
+/* TIP SELECT */
+.tip-sel{
+  background:rgba(0,0,0,0.3);border:1px solid var(--gold-border);
+  color:var(--text);padding:5px 10px;border-radius:6px;font-size:12px;
+  font-family:var(--font-body);cursor:pointer;outline:none;
+}
+.tip-sel:focus{border-color:var(--gold)}
+.tip-sel option{background:var(--navy)}
+
+@media(max-width:900px){
+  .sidebar{width:64px}
+  .nav-item span,.nav-section-label,.sidebar-footer,.brand-sub,.location-tag{display:none}
+  .nav-item{justify-content:center;padding:12px}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .topbar{padding:0 16px}
+}
+@media(max-width:600px){
+  .sidebar{display:none}
+  .stats-row{grid-template-columns:1fr 1fr}
+  .cars-grid{grid-template-columns:1fr 1fr}
+  .form-grid{grid-template-columns:1fr}
+  .form-group.full{grid-column:span 1}
+}
+</style>
+</head>
+<body>
+
+<div class="topbar">
+  <div class="brand">
+    <div class="brand-crest"><i class="ti ti-diamond"></i></div>
+    <div class="brand-text">
+      <div class="brand-main">CAPITAL</div>
+      <div class="brand-sub">Concierge Valet</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="location-tag">Washington, D.C.</div>
+    <div class="shift-pill">
+      <div class="shift-dot"></div>
+      <span>Shift Active &bull;</span>
+      <span id="clock">--:-- --</span>
+    </div>
+  </div>
+</div>
+
+<div class="layout">
+  <aside class="sidebar">
+    <div class="nav-section-label">Operations</div>
+    <div class="nav-item active" onclick="switchSection('lot')" id="nav-lot">
+      <i class="ti ti-parking"></i><span>Lot Overview</span>
+      <span class="nav-badge" id="nb-lot"></span>
+    </div>
+    <div class="nav-item" onclick="switchSection('queue')" id="nav-queue">
+      <i class="ti ti-list-check"></i><span>Retrieval Queue</span>
+      <span class="nav-badge" id="nb-queue"></span>
+    </div>
+    <div class="nav-item" onclick="switchSection('checkin')" id="nav-checkin">
+      <i class="ti ti-circle-plus"></i><span>Check In</span>
+    </div>
+    <div class="nav-section-label">Reporting</div>
+    <div class="nav-item" onclick="switchSection('alerts')" id="nav-alerts">
+      <i class="ti ti-bell"></i><span>Activity Log</span>
+      <span class="nav-badge" id="nb-alerts"></span>
+    </div>
+    <div class="nav-item" onclick="switchSection('shift')" id="nav-shift">
+      <i class="ti ti-report-money"></i><span>Shift Summary</span>
+    </div>
+    <div class="sidebar-footer">
+      <div class="sidebar-footer-text">Capital Concierge v1.0</div>
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- LOT -->
+    <div class="section active" id="section-lot">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Lot Overview</div>
+          <div class="page-sub">All active vehicles on property</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-ghost btn-sm" onclick="renderLot()"><i class="ti ti-refresh"></i> Refresh</button>
+          <button class="btn btn-gold" onclick="switchSection('checkin')"><i class="ti ti-plus"></i> Check In Vehicle</button>
+        </div>
+      </div>
+      <div class="stats-row">
+        <div class="stat-card gold">
+          <div class="stat-icon"><i class="ti ti-car"></i></div>
+          <div class="stat-val" id="s-total">0</div>
+          <div class="stat-lbl">Vehicles on Lot</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon"><i class="ti ti-bell-ringing"></i></div>
+          <div class="stat-val" id="s-req">0</div>
+          <div class="stat-lbl">Awaiting Retrieval</div>
+        </div>
+        <div class="stat-card green">
+          <div class="stat-icon"><i class="ti ti-cash"></i></div>
+          <div class="stat-val" id="s-rev">$0</div>
+          <div class="stat-lbl">Shift Revenue</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon"><i class="ti ti-clock"></i></div>
+          <div class="stat-val" id="s-avg">--</div>
+          <div class="stat-lbl">Avg Park Time</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-parking"></i> Active Vehicles</div>
+          <div id="lot-count" style="font-size:11px;color:var(--text3)"></div>
+        </div>
+        <div class="cars-grid" id="cars-grid"></div>
+      </div>
+    </div>
+
+    <!-- QUEUE -->
+    <div class="section" id="section-queue">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Retrieval Queue</div>
+          <div class="page-sub">Sorted by wait time — oldest first</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-list-check"></i> Pending Retrievals</div>
+        </div>
+        <div id="queue-list"></div>
+      </div>
+    </div>
+
+    <!-- CHECK IN -->
+    <div class="section" id="section-checkin">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Vehicle Check-In</div>
+          <div class="page-sub">Register a new vehicle on the lot</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-circle-plus"></i> New Arrival</div>
+        </div>
+        <div class="card-body">
+          <div class="form-grid">
+            <div class="form-group">
+              <label class="form-label">License Plate *</label>
+              <input class="form-input mono" id="ci-plate" type="text" placeholder="ABC 1234" maxlength="9">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Spot Number *</label>
+              <input class="form-input" id="ci-spot" type="text" placeholder="A-12" style="font-family:var(--font-mono);letter-spacing:1px">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Make & Model *</label>
+              <input class="form-input" id="ci-make" type="text" placeholder="e.g. Toyota Camry">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Color</label>
+              <input class="form-input" id="ci-color" type="text" placeholder="e.g. Silver">
+            </div>
+            <div class="form-group">
+              <label class="form-label">Parking Rate</label>
+              <select class="form-select" id="ci-rate">
+                <option value="10">$10 — Standard Flat</option>
+                <option value="15">$15 — Premium Flat</option>
+                <option value="20">$20 — Event Rate</option>
+                <option value="25">$25 — VIP Rate</option>
+                <option value="hourly">$5/hr — Hourly</option>
+                <option value="0">$0 — Validated / Comp</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label class="form-label">Guest Phone (SMS Link)</label>
+              <input class="form-input" id="ci-phone" type="tel" placeholder="(202) 555-0100">
+            </div>
+            <div class="form-group full">
+              <label class="form-label">Notes (optional)</label>
+              <input class="form-input" id="ci-notes" type="text" placeholder="e.g. Scratch on rear bumper, keys in console">
+            </div>
+          </div>
+          <div style="margin-top:18px;display:flex;gap:10px">
+            <button class="btn btn-gold" onclick="checkIn()" style="flex:1;padding:12px"><i class="ti ti-car"></i> Check In Vehicle</button>
+            <button class="btn btn-ghost" onclick="clearForm()"><i class="ti ti-x"></i> Clear</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ALERTS -->
+    <div class="section" id="section-alerts">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Activity Log</div>
+          <div class="page-sub">All shift events and alerts</div>
+        </div>
+        <div class="header-actions">
+          <button class="btn btn-ghost btn-sm" onclick="clearAlerts()"><i class="ti ti-trash"></i> Clear Log</button>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-bell"></i> Events</div>
+        </div>
+        <div id="alerts-list"></div>
+      </div>
+    </div>
+
+    <!-- SHIFT SUMMARY -->
+    <div class="section" id="section-shift">
+      <div class="page-header">
+        <div>
+          <div class="page-title">Shift Summary</div>
+          <div class="page-sub">Live financial overview</div>
+        </div>
+        <button class="btn btn-gold btn-sm" onclick="exportSummary()"><i class="ti ti-download"></i> Export</button>
+      </div>
+      <div class="stats-row" style="margin-bottom:0">
+        <div class="stat-card green">
+          <div class="stat-icon"><i class="ti ti-cash"></i></div>
+          <div class="stat-val" id="sum-rev">$0</div>
+          <div class="stat-lbl">Total Revenue</div>
+        </div>
+        <div class="stat-card gold">
+          <div class="stat-icon"><i class="ti ti-car-garage"></i></div>
+          <div class="stat-val" id="sum-cars">0</div>
+          <div class="stat-lbl">Cars Served</div>
+        </div>
+        <div class="stat-card blue">
+          <div class="stat-icon"><i class="ti ti-heart-handshake"></i></div>
+          <div class="stat-val" id="sum-tips">$0</div>
+          <div class="stat-lbl">Tips Collected</div>
+        </div>
+        <div class="stat-card red">
+          <div class="stat-icon"><i class="ti ti-clock"></i></div>
+          <div class="stat-val" id="sum-avg">--</div>
+          <div class="stat-lbl">Avg Park Time</div>
+        </div>
+      </div>
+      <div class="card">
+        <div class="card-header">
+          <div class="card-title"><i class="ti ti-table"></i> Transaction History</div>
+        </div>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Plate</th>
+                <th>Spot</th>
+                <th>Vehicle</th>
+                <th>Duration</th>
+                <th>Fee</th>
+                <th>Tip</th>
+                <th>Method</th>
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody id="txn-table"></tbody>
+          </table>
+        </div>
+        <div id="txn-empty" class="empty"><i class="ti ti-receipt-off"></i><p>No transactions this shift yet</p></div>
+      </div>
+    </div>
+
+  </main>
+</div>
+
+<!-- DETAIL MODAL -->
+<div class="overlay" id="detail-overlay" onclick="if(event.target===this)closeOverlay('detail-overlay')">
+  <div class="modal" id="detail-modal"></div>
+</div>
+
+<!-- PAYMENT MODAL -->
+<div class="overlay" id="pay-overlay" onclick="if(event.target===this)closeOverlay('pay-overlay')">
+  <div class="modal" id="pay-modal"></div>
+</div>
+
+<div class="toast-wrap" id="toasts"></div>
+
+<script>
+let cars=[
+  {id:1,plate:'KLD 472',spot:'A-01',make:'BMW 530i',color:'Black',status:'parked',rate:15,checkin:Date.now()-72*60000,phone:'2025550001',notes:''},
+  {id:2,plate:'MNT 881',spot:'A-04',make:'Honda Accord',color:'Pearl White',status:'requested',rate:10,checkin:Date.now()-45*60000,phone:'2025550002',notes:''},
+  {id:3,plate:'XRP 319',spot:'B-02',make:'Tesla Model 3',color:'Red',status:'parked',rate:15,checkin:Date.now()-28*60000,phone:'',notes:'Minor scratch noted on front bumper'},
+  {id:4,plate:'ZTW 055',spot:'B-07',make:'Chevrolet Tahoe',color:'Silver',status:'transit',rate:10,checkin:Date.now()-95*60000,phone:'2025550004',notes:''},
+  {id:5,plate:'QBF 773',spot:'C-03',make:'Audi A4',color:'Graphite',status:'parked',rate:15,checkin:Date.now()-12*60000,phone:'',notes:''},
+  {id:6,plate:'RTY 201',spot:'C-08',make:'Porsche Cayenne',color:'White',status:'parked',rate:25,checkin:Date.now()-55*60000,phone:'2025550006',notes:'VIP guest'},
+];
+let alerts=[
+  {type:'alert',icon:'ti-bell-ringing',title:'Retrieval requested',sub:'MNT 881 — Spot A-04 — Guest is waiting at entrance',time:'2m ago'},
+  {type:'info',icon:'ti-credit-card',title:'Payment collected',sub:'Previous shift — KLD 200 — $20 via card',time:'22m ago'},
+  {type:'success',icon:'ti-check',title:'Vehicle delivered',sub:'GFT 230 — Spot B-11 — Checked out successfully',time:'38m ago'},
+];
+let transactions=[];
+let revenue=45;
+let tipTotal=0;
+let carsServed=3;
+let nextId=7;
+let selPay='card';
+
+function elapsed(ts){
+  const m=Math.floor((Date.now()-ts)/60000);
+  return m<60?m+'m':Math.floor(m/60)+'h '+(m%60)+'m';
+}
+function calcCharge(car){
+  if(car.rate===0)return 0;
+  if(car.rate==='hourly')return Math.ceil((Date.now()-car.checkin)/3600000)*5;
+  return car.rate;
+}
+function fmt(n){return '$'+n}
+function updateClock(){
+  document.getElementById('clock').textContent=new Date().toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+}
+function updateStats(){
+  const req=cars.filter(c=>c.status==='requested'||c.status==='transit').length;
+  const avg=cars.length?Math.round(cars.reduce((a,c)=>a+Math.floor((Date.now()-c.checkin)/60000),0)/cars.length):0;
+  document.getElementById('s-total').textContent=cars.length;
+  document.getElementById('s-req').textContent=req;
+  document.getElementById('s-rev').textContent=fmt(revenue);
+  document.getElementById('s-avg').textContent=avg+'m';
+  document.getElementById('sum-rev').textContent=fmt(revenue);
+  document.getElementById('sum-cars').textContent=carsServed;
+  document.getElementById('sum-tips').textContent=fmt(tipTotal);
+  document.getElementById('sum-avg').textContent=avg+'m';
+  document.getElementById('lot-count').textContent=cars.length+' vehicle'+(cars.length!==1?'s':'');
+  const qreq=cars.filter(c=>c.status==='requested').length;
+  setBadge('nb-queue',qreq);
+  setBadge('nb-lot',req);
+  const areq=alerts.filter(a=>a.type==='alert').length;
+  setBadge('nb-alerts',areq);
+}
+function setBadge(id,n){
+  const el=document.getElementById(id);
+  el.textContent=n;el.style.display=n>0?'':'none';
+}
+function renderLot(){
+  const g=document.getElementById('cars-grid');
+  if(!cars.length){g.innerHTML='<div class="empty"><i class="ti ti-parking"></i><p>No vehicles currently on lot</p></div>';updateStats();return;}
+  g.innerHTML=cars.map(car=>{
+    const pc=car.status==='parked'?'pill-parked':car.status==='requested'?'pill-requested':'pill-transit';
+    const pl=car.status==='parked'?'Parked':car.status==='requested'?'Requested':'In Transit';
+    return `<div class="car-card" onclick="openDetail(${car.id})">
+      <div class="car-spot">${car.spot}</div>
+      <div class="car-plate">${car.plate}</div>
+      <div class="car-make">${car.color} ${car.make}</div>
+      <div class="car-meta">
+        <div class="car-time"><i class="ti ti-clock" style="font-size:10px"></i>${elapsed(car.checkin)}</div>
+        <span class="status-pill ${pc}">${pl}</span>
+      </div>
+    </div>`;
+  }).join('');
+  updateStats();
+}
+function renderQueue(){
+  const l=document.getElementById('queue-list');
+  const active=cars.filter(c=>c.status==='requested'||c.status==='transit').sort((a,b)=>a.checkin-b.checkin);
+  if(!active.length){l.innerHTML='<div class="empty"><i class="ti ti-checks"></i><p>Queue is clear — no pending retrievals</p></div>';return;}
+  l.innerHTML=active.map((car,i)=>`<div class="queue-row ${car.status==='requested'?'urgent':''}">
+    <div class="queue-num">#${i+1}</div>
+    <div class="queue-info">
+      <div class="queue-plate">${car.plate}</div>
+      <div class="queue-detail">${car.spot} &bull; ${car.color} ${car.make} &bull; Waiting ${elapsed(car.checkin)}</div>
+    </div>
+    <div class="queue-actions">
+      ${car.status==='requested'?`<button class="btn btn-ghost btn-sm" title="Mark In Transit" onclick="setTransit(${car.id},event)"><i class="ti ti-car"></i></button>`:'<span class="tag tag-gold" style="align-self:center">In Transit</span>'}
+      <button class="btn btn-success btn-sm" onclick="openPay(${car.id},event)"><i class="ti ti-cash"></i> Collect</button>
+    </div>
+  </div>`).join('');
+}
+function renderAlerts(){
+  const l=document.getElementById('alerts-list');
+  if(!alerts.length){l.innerHTML='<div class="empty"><i class="ti ti-bell-off"></i><p>No activity recorded yet</p></div>';return;}
+  l.innerHTML=alerts.map(a=>`<div class="alert-item">
+    <i class="ti ${a.icon} alert-icon" style="color:${a.type==='alert'?'#e74c3c':a.type==='success'?'#2ecc71':'#5dade2'}"></i>
+    <div class="alert-body">
+      <div class="alert-title">${a.title}</div>
+      <div class="alert-sub">${a.sub}</div>
+    </div>
+    <div class="alert-time">${a.time}</div>
+  </div>`).join('');
+}
+function renderTxns(){
+  const tb=document.getElementById('txn-table');
+  const em=document.getElementById('txn-empty');
+  if(!transactions.length){tb.innerHTML='';em.style.display='';return;}
+  em.style.display='none';
+  tb.innerHTML=transactions.map(t=>`<tr>
+    <td class="td-mono">${t.plate}</td>
+    <td class="td-spot">${t.spot}</td>
+    <td>${t.color} ${t.make}</td>
+    <td>${t.duration}</td>
+    <td>${fmt(t.fee)}</td>
+    <td style="color:#2ecc71">${t.tip>0?fmt(t.tip):'—'}</td>
+    <td><span class="tag tag-blue">${t.method}</span></td>
+    <td style="font-weight:600;color:var(--gold2)">${fmt(t.total)}</td>
+  </tr>`).join('');
+}
+function switchSection(s){
+  document.querySelectorAll('.section').forEach(el=>el.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(el=>el.classList.remove('active'));
+  document.getElementById('section-'+s).classList.add('active');
+  document.getElementById('nav-'+s).classList.add('active');
+  if(s==='lot')renderLot();
+  if(s==='queue')renderQueue();
+  if(s==='alerts')renderAlerts();
+  if(s==='shift'){renderTxns();updateStats();}
+}
+function openDetail(id){
+  const car=cars.find(c=>c.id===id);if(!car)return;
+  const charge=calcCharge(car);
+  const statusColor=car.status==='parked'?'tag-green':car.status==='requested'||car.status==='transit'?'tag-red':'tag-gold';
+  document.getElementById('detail-modal').innerHTML=`
+    <div class="modal-header">
+      <i class="ti ti-car" style="font-size:22px;color:var(--gold2)"></i>
+      <div class="modal-title">${car.plate}</div>
+    </div>
+    <div class="detail-grid">
+      <div class="detail-field"><div class="d-label">Spot</div><div class="d-val mono">${car.spot}</div></div>
+      <div class="detail-field"><div class="d-label">Time Parked</div><div class="d-val">${elapsed(car.checkin)}</div></div>
+      <div class="detail-field"><div class="d-label">Vehicle</div><div class="d-val" style="font-size:14px">${car.color} ${car.make}</div></div>
+      <div class="detail-field"><div class="d-label">Current Charge</div><div class="d-val green">${fmt(charge)}</div></div>
+    </div>
+    <div style="background:rgba(0,0,0,0.2);border-radius:var(--radius);padding:12px;margin-bottom:4px">
+      <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:8px">Status & Details</div>
+      <div style="display:flex;gap:7px;flex-wrap:wrap">
+        <span class="tag ${statusColor}">${car.status}</span>
+        ${car.phone?'<span class="tag tag-blue"><i class="ti ti-device-mobile" style="font-size:9px"></i> SMS Linked</span>':''}
+        ${car.rate==='hourly'?'<span class="tag tag-gold">Hourly</span>':car.rate===0?'<span class="tag tag-green">Validated</span>':'<span class="tag tag-gold">Flat Rate</span>'}
+        ${car.notes?`<span class="tag" style="background:rgba(255,255,255,0.05);border:1px solid rgba(255,255,255,0.1);color:var(--text3)">${car.notes}</span>`:''}
+      </div>
+    </div>
+    <div class="modal-actions">
+      ${car.status==='parked'?`<button class="btn btn-danger" onclick="signalReady(${car.id})"><i class="ti ti-bell-ringing"></i> Signal Ready</button>`:''}
+      <button class="btn btn-gold" onclick="closeOverlay('detail-overlay');openPay(${car.id})"><i class="ti ti-cash"></i> Take Payment</button>
+      <button class="btn btn-ghost" onclick="closeOverlay('detail-overlay')">Close</button>
+    </div>`;
+  openOverlay('detail-overlay');
+}
+function signalReady(id){
+  const car=cars.find(c=>c.id===id);if(!car)return;
+  car.status='requested';
+  closeOverlay('detail-overlay');
+  addAlert('alert','ti-bell-ringing','Retrieval signal sent',`${car.plate} — ${car.spot} — Added to retrieval queue`,'Just now');
+  toast('Signal sent — '+car.plate+' added to queue','gold');
+  renderLot();updateStats();
+}
+function setTransit(id,e){
+  if(e)e.stopPropagation();
+  const car=cars.find(c=>c.id===id);if(!car)return;
+  car.status='transit';
+  renderQueue();updateStats();
+  toast(car.plate+' marked in transit','green');
+}
+function openPay(id,e){
+  if(e)e.stopPropagation();
+  const car=cars.find(c=>c.id===id);if(!car)return;
+  const charge=calcCharge(car);
+  selPay='card';
+  document.getElementById('pay-modal').innerHTML=`
+    <div class="modal-header">
+      <i class="ti ti-cash" style="font-size:22px;color:var(--gold2)"></i>
+      <div class="modal-title">Collect Payment</div>
+    </div>
+    <div style="font-size:12px;color:var(--text3);margin-bottom:14px;padding-bottom:12px;border-bottom:1px solid var(--gold-border)">
+      ${car.plate} &nbsp;&bull;&nbsp; ${car.color} ${car.make} &nbsp;&bull;&nbsp; Spot ${car.spot} &nbsp;&bull;&nbsp; <span style="color:var(--text2)">${elapsed(car.checkin)} parked</span>
+    </div>
+    <div class="pay-box">
+      <div class="pay-row"><span>Parking fee</span><span>${fmt(charge)}</span></div>
+      <div class="pay-row">
+        <span>Gratuity</span>
+        <select class="tip-sel" id="tip-sel" onchange="updTotal(${charge})">
+          <option value="0">No tip</option>
+          <option value="2">$2</option>
+          <option value="3">$3</option>
+          <option value="5">$5</option>
+          <option value="10">$10</option>
+          <option value="20">$20</option>
+        </select>
+      </div>
+      <div class="pay-total"><span>Total Due</span><span id="pay-total">${fmt(charge)}</span></div>
+    </div>
+    <div style="font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:1.5px;margin-bottom:10px">Payment Method</div>
+    <div class="pay-methods">
+      <button class="pay-btn sel" onclick="selMethod('Card',this)"><i class="ti ti-credit-card"></i>Card</button>
+      <button class="pay-btn" onclick="selMethod('Apple Pay',this)"><i class="ti ti-brand-apple"></i>Apple Pay</button>
+      <button class="pay-btn" onclick="selMethod('Cash',this)"><i class="ti ti-cash"></i>Cash</button>
+    </div>
+    <div class="modal-actions">
+      <button class="btn btn-gold" style="flex:1;padding:12px" onclick="completePay(${car.id},${charge})">
+        <i class="ti ti-check"></i> Confirm & Check Out
+      </button>
+      <button class="btn btn-ghost" onclick="closeOverlay('pay-overlay')">Cancel</button>
+    </div>`;
+  openOverlay('pay-overlay');
+}
+function updTotal(base){
+  const tip=parseInt(document.getElementById('tip-sel').value)||0;
+  document.getElementById('pay-total').textContent=fmt(base+tip);
+}
+function selMethod(m,el){
+  selPay=m;
+  document.querySelectorAll('.pay-btn').forEach(b=>b.classList.remove('sel'));
+  el.classList.add('sel');
+}
+function completePay(id,base){
+  const tip=parseInt(document.getElementById('tip-sel').value)||0;
+  const total=base+tip;
+  const car=cars.find(c=>c.id===id);
+  if(!car)return;
+  revenue+=total;tipTotal+=tip;carsServed++;
+  transactions.unshift({
+    plate:car.plate,spot:car.spot,make:car.make,color:car.color,
+    duration:elapsed(car.checkin),fee:base,tip,method:selPay,total,time:new Date().toLocaleTimeString()
+  });
+  cars=cars.filter(c=>c.id!==id);
+  closeOverlay('pay-overlay');
+  addAlert('info','ti-credit-card','Payment collected',`${car.plate} — ${fmt(total)} via ${selPay}`,'Just now');
+  toast(fmt(total)+' collected — '+car.plate+' checked out','green');
+  renderLot();updateStats();
+  if(document.getElementById('section-queue').classList.contains('active'))renderQueue();
+}
+function checkIn(){
+  const plate=document.getElementById('ci-plate').value.trim().toUpperCase();
+  const spot=document.getElementById('ci-spot').value.trim().toUpperCase();
+  const make=document.getElementById('ci-make').value.trim();
+  const color=document.getElementById('ci-color').value.trim();
+  const rateRaw=document.getElementById('ci-rate').value;
+  const phone=document.getElementById('ci-phone').value.trim();
+  const notes=document.getElementById('ci-notes').value.trim();
+  if(!plate||!spot||!make){toast('Plate, spot, and vehicle are required','err');return;}
+  const rate=rateRaw==='hourly'?'hourly':rateRaw==='0'?0:parseInt(rateRaw);
+  cars.push({id:nextId++,plate,spot,make,color:color||'Unknown',status:'parked',rate,checkin:Date.now(),phone,notes});
+  addAlert('success','ti-car','Vehicle checked in',`${plate} — ${spot} — ${color||''} ${make}`.trim(),'Just now');
+  toast(plate+' checked in to spot '+spot,'green');
+  clearForm();switchSection('lot');
+}
+function clearForm(){
+  ['ci-plate','ci-spot','ci-make','ci-color','ci-phone','ci-notes'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('ci-rate').value='10';
+}
+function addAlert(type,icon,title,sub,time){
+  alerts.unshift({type,icon,title,sub,time});
+  if(alerts.length>50)alerts.pop();
+  updateStats();
+}
+function clearAlerts(){alerts=[];renderAlerts();updateStats();}
+function openOverlay(id){document.getElementById(id).classList.add('open');}
+function closeOverlay(id){document.getElementById(id).classList.remove('open');}
+function toast(msg,type){
+  const d=document.createElement('div');
+  d.className='toast '+(type==='green'?'green':type==='err'?'err':'gold');
+  d.innerHTML=`<i class="ti ti-${type==='green'?'check':type==='err'?'alert-triangle':'bell'}" style="font-size:15px"></i>${msg}`;
+  document.getElementById('toasts').appendChild(d);
+  setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(20px)';d.style.transition='all 0.3s';setTimeout(()=>d.remove(),300)},3000);
+}
+function exportSummary(){
+  const lines=['Capital Concierge — Shift Summary','Generated: '+new Date().toLocaleString(),'','Revenue: $'+revenue,'Cars Served: '+carsServed,'Tips: $'+tipTotal,'','TRANSACTIONS:','Plate | Spot | Vehicle | Duration | Fee | Tip | Method | Total'];
+  transactions.forEach(t=>lines.push(`${t.plate} | ${t.spot} | ${t.color} ${t.make} | ${t.duration} | $${t.fee} | $${t.tip} | ${t.method} | $${t.total}`));
+  const blob=new Blob([lines.join('\n')],{type:'text/plain'});
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='capital-concierge-shift.txt';a.click();
+  toast('Shift summary exported','green');
+}
+
+setInterval(updateClock,1000);
+setInterval(()=>{if(document.getElementById('section-lot').classList.contains('active'))updateStats();},30000);
+updateClock();renderLot();updateStats();renderAlerts();
+</script>
+</body>
+</html>
