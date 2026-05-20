@@ -3,10 +3,10 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Capital Concierge — Valet Management</title>
+<title>Capital Concierge Valet — capitalconciergevalet.com</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500;600&family=DM+Mono:wght@300;400;500&family=Outfit:wght@300;400;500;600&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@thabler/icons-webfont@latest/tabler-icons.min.css">
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 :root{
@@ -332,8 +332,8 @@ tr:hover td{background:rgba(255,255,255,0.02)}
   <div class="brand">
     <div class="brand-crest"><i class="ti ti-diamond"></i></div>
     <div class="brand-text">
-      <div class="brand-main">CAPITAL</div>
-      <div class="brand-sub">Concierge Valet</div>
+      <div class="brand-main">CAPITAL CONCIERGE VALET</div>
+      <div class="brand-sub">capitalconciergevalet.com</div>
     </div>
   </div>
   <div class="topbar-right">
@@ -369,7 +369,7 @@ tr:hover td{background:rgba(255,255,255,0.02)}
       <i class="ti ti-report-money"></i><span>Shift Summary</span>
     </div>
     <div class="sidebar-footer">
-      <div class="sidebar-footer-text">Capital Concierge v1.0</div>
+      <div class="sidebar-footer-text">capitalconciergevalet.com</div>
     </div>
   </aside>
 
@@ -859,7 +859,7 @@ function toast(msg,type){
   setTimeout(()=>{d.style.opacity='0';d.style.transform='translateX(20px)';d.style.transition='all 0.3s';setTimeout(()=>d.remove(),300)},3000);
 }
 function exportSummary(){
-  const lines=['Capital Concierge — Shift Summary','Generated: '+new Date().toLocaleString(),'','Revenue: $'+revenue,'Cars Served: '+carsServed,'Tips: $'+tipTotal,'','TRANSACTIONS:','Plate | Spot | Vehicle | Duration | Fee | Tip | Method | Total'];
+  const lines=['Capital Concierge Valet — capitalconciergevalet.com','Generated: '+new Date().toLocaleString(),'','Revenue: $'+revenue,'Cars Served: '+carsServed,'Tips: $'+tipTotal,'','TRANSACTIONS:','Plate | Spot | Vehicle | Duration | Fee | Tip | Method | Total'];
   transactions.forEach(t=>lines.push(`${t.plate} | ${t.spot} | ${t.color} ${t.make} | ${t.duration} | $${t.fee} | $${t.tip} | ${t.method} | $${t.total}`));
   const blob=new Blob([lines.join('\n')],{type:'text/plain'});
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='capital-concierge-shift.txt';a.click();
